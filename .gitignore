@@ -6,6 +6,11 @@
 
 # Ignore bundler config.
 /.bundle
+/Gemfile.local
+/Gemfile.local.lock
+
+# Local Codex MCP configuration may contain credentials.
+/.codex/config.toml
 
 # Ignore the default SQLite database.
 /db/*.sqlite3

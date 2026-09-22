@@ -37,6 +37,10 @@ Rails.application.configure do
   # Store uploaded files on the local file system in a temporary directory.
   config.active_storage.service = :test
 
+  # join_room waits for all three streams after Turbo has replaced the sidebar.
+  # Turbo's automatic per-element wait can retain a detached stream element.
+  config.turbo.test_connect_after_actions = []
+
   # Print deprecation notices to the stderr.
   config.active_support.deprecation = :stderr
 
