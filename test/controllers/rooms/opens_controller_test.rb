@@ -41,7 +41,7 @@ class Rooms::OpensControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :forbidden
-    assert rooms(:hq).reload.name, "HQ"
+    assert_equal "HQ", rooms(:hq).reload.name
   end
 
   test "update" do
@@ -50,7 +50,7 @@ class Rooms::OpensControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to room_url(rooms(:pets))
-    assert rooms(:pets).reload.name, "New Name"
+    assert_equal "New Name", rooms(:pets).reload.name
   end
 
   test "update a closed room to be open" do
