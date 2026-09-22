@@ -17,7 +17,7 @@ class RoomsControllerTest < ActionDispatch::IntegrationTest
 
   test "shows records the last room visited in a cookie" do
     get room_url(users(:david).rooms.last)
-    assert response.cookies[:last_room] = users(:david).rooms.last.id
+    assert_equal users(:david).rooms.last.id.to_s, response.cookies["last_room"]
   end
 
   test "show renders a link preview written by hand without its off-scheme image and link" do

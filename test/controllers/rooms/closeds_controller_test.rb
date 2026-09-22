@@ -47,7 +47,7 @@ class Rooms::ClosedsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to room_url(rooms(:designers))
-    assert rooms(:designers).reload.name, "New Name"
+    assert_equal "New Name", rooms(:designers).reload.name
   end
 
   test "update an open room to be closed" do
@@ -63,7 +63,7 @@ class Rooms::ClosedsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :forbidden
-    assert rooms(:designers).reload.name, "Designers"
+    assert_equal "Designers", rooms(:designers).reload.name
   end
 
   test "a direct room can't be converted to closed and have its participants revised" do
