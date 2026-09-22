@@ -15,6 +15,11 @@ class Rooms::ClosedsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "edit" do
+    get edit_rooms_closed_url(rooms(:designers))
+    assert_response :success
+  end
+
   test "create" do
     assert_turbo_stream_broadcasts [ users(:david), :rooms ], count: 1 do
     assert_turbo_stream_broadcasts [ users(:kevin), :rooms ], count: 1 do

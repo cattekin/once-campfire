@@ -15,6 +15,11 @@ class Rooms::OpensControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "edit" do
+    get edit_rooms_open_url(rooms(:pets))
+    assert_response :success
+  end
+
   test "create" do
     assert_turbo_stream_broadcasts :rooms, count: 1 do
       post rooms_opens_url, params: { room: { name: "My New Room" } }
