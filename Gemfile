@@ -28,6 +28,7 @@ gem "stimulus-rails"
 
 # Media handling
 gem "image_processing", ">= 1.2"
+gem "ruby-vips", ">= 2.2.1"
 
 # Telemetry
 gem "sentry-ruby"
