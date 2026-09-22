@@ -11,19 +11,25 @@ class Rooms::InvolvementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update involvement sends turbo update when becoming visible and when going invisible" do
-    assert_turbo_stream_broadcasts [ users(:david), :rooms ], count: 1 do
+    removal = capture_turbo_stream_broadcasts([ users(:david), :rooms ]) do
     assert_changes -> { memberships(:david_watercooler).reload.involvement }, from: "everything", to: "invisible" do
       put room_involvement_url(rooms(:watercooler)), params: { involvement: "invisible" }
       assert_redirected_to room_involvement_url(rooms(:watercooler))
     end
-    end
+    end.sole
 
-    assert_turbo_stream_broadcasts [ users(:david), :rooms ], count: 2 do
+    assert_equal "remove", removal["action"]
+    assert_equal ActionView::RecordIdentifier.dom_id(rooms(:watercooler), :list), removal["target"]
+
+    insertion = capture_turbo_stream_broadcasts([ users(:david), :rooms ]) do
     assert_changes -> { memberships(:david_watercooler).reload.involvement }, from: "invisible", to: "everything" do
       put room_involvement_url(rooms(:watercooler)), params: { involvement: "everything" }
       assert_redirected_to room_involvement_url(rooms(:watercooler))
     end
-    end
+    end.sole
+
+    assert_equal "prepend", insertion["action"]
+    assert_equal "shared_rooms", insertion["target"]
   end
 
   test "updating involvement does not send turbo update changing visible states" do
