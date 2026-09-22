@@ -55,7 +55,6 @@ class UnfurlLinksControllerTest < ActionDispatch::IntegrationTest
   test "create with a missing URL" do
     assert_raise ActionController::ParameterMissing do
       post unfurl_link_url, params: { url: "" }
-      assert_response :bad_request
     end
   end
 

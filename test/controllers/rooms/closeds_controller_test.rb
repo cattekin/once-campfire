@@ -30,7 +30,7 @@ class Rooms::ClosedsControllerTest < ActionDispatch::IntegrationTest
     end
 
     new_room = Room.last
-    assert_equal new_room.memberships.count, 3
+    assert_equal 3, new_room.memberships.count
     assert_redirected_to room_url(Room.last)
   end
 
@@ -57,7 +57,7 @@ class Rooms::ClosedsControllerTest < ActionDispatch::IntegrationTest
 
   test "update an open room to be closed" do
     put rooms_closed_url(rooms(:pets)), params: { room: { name: "Doesn't matter" }, user_ids: [ users(:david).id, users(:jason).id ] }
-    assert_equal rooms(:pets).memberships.count, 2
+    assert_equal 2, rooms(:pets).memberships.count
   end
 
   test "only admins or creators can update" do

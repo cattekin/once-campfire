@@ -79,31 +79,40 @@ class MessagesControllerTest < ActionDispatch::IntegrationTest
   test "update updates a message belonging to the user" do
     message = @room.messages.where(creator: users(:david)).first
 
-    Turbo::StreamsChannel.expects(:broadcast_replace_to).once
     put room_message_url(@room, message), params: { message: { body: "Updated body" } }
 
     assert_redirected_to room_message_url(@room, message)
     assert_equal "Updated body", message.reload.plain_text_body
+
+    assert_rendered_turbo_stream_broadcast @room, :messages, action: "replace", target: [ message, :presentation ] do
+      assert_select "#" + dom_id(message, :presentation), text: /Updated body/
+    end
   end
 
   test "admin updates a message belonging to another user" do
     message = @room.messages.where(creator: users(:jason)).first
 
-    Turbo::StreamsChannel.expects(:broadcast_replace_to).once
     put room_message_url(@room, message), params: { message: { body: "Updated body" } }
 
     assert_redirected_to room_message_url(@room, message)
     assert_equal "Updated body", message.reload.plain_text_body
+
+    assert_rendered_turbo_stream_broadcast @room, :messages, action: "replace", target: [ message, :presentation ] do
+      assert_select "#" + dom_id(message, :presentation), text: /Updated body/
+    end
   end
 
   test "destroy destroys a message belonging to the user" do
     message = @room.messages.where(creator: users(:david)).first
 
     assert_difference -> { Message.count }, -1 do
-      Turbo::StreamsChannel.expects(:broadcast_remove_to).once
-      delete room_message_url(@room, message, format: :turbo_stream)
-      assert_response :success
+      assert_turbo_stream_broadcasts [ @room, :messages ], count: 1 do
+        delete room_message_url(@room, message, format: :turbo_stream)
+        assert_response :success
+      end
     end
+
+    assert_rendered_turbo_stream_broadcast @room, :messages, action: "remove", target: [ message ]
   end
 
   test "admin destroy destroys a message belonging to another user" do
@@ -111,10 +120,13 @@ class MessagesControllerTest < ActionDispatch::IntegrationTest
     message = @room.messages.where(creator: users(:jason)).first
 
     assert_difference -> { Message.count }, -1 do
-      Turbo::StreamsChannel.expects(:broadcast_remove_to).once
-      delete room_message_url(@room, message, format: :turbo_stream)
-      assert_response :success
+      assert_turbo_stream_broadcasts [ @room, :messages ], count: 1 do
+        delete room_message_url(@room, message, format: :turbo_stream)
+        assert_response :success
+      end
     end
+
+    assert_rendered_turbo_stream_broadcast @room, :messages, action: "remove", target: [ message ]
   end
 
   test "ensure non-admin can't update a message belonging to another user" do
