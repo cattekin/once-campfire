@@ -23,9 +23,9 @@ GIT
 
 GIT
   remote: https://github.com/rails/propshaft.git
-  revision: e49a9de659ff27462015e54dd832e86e762a6ddc
+  revision: dc979db89cd07c72ee4d11d415ae1cb4fd072623
   specs:
-    propshaft (1.2.1)
+    propshaft (1.3.2)
       actionpack (>= 7.0.0)
       activesupport (>= 7.0.0)
       rack
