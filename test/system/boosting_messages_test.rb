@@ -21,6 +21,8 @@ class BoostingMessagesTest < ApplicationSystemTestCase
       join_room rooms(:designers)
 
       within "#" + dom_id(boosts(:first)) do
+        # Wait for boost-delete to connect before clicking.
+        assert_selector "span[aria-describedby=delete_boost_accessible_label]"
         find("span", text: "Hello").click
         assert_selector "button", text: "Delete this boost", wait: 5
         click_on "Delete this boost"
