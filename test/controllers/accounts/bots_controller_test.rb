@@ -38,7 +38,7 @@ class Accounts::BotsControllerTest < ActionDispatch::IntegrationTest
 
   test "remove webhook" do
     assert_difference -> { Webhook.count }, -1 do
-      put account_bot_url(users(:bender)), params: { user: { name: "Bender's New Friend", webook_url: "" } }
+      put account_bot_url(users(:bender)), params: { user: { name: "Bender's New Friend", webhook_url: "" } }
       assert_redirected_to account_bots_url
     end
   end

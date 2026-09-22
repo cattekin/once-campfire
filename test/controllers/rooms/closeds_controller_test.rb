@@ -6,7 +6,7 @@ class Rooms::ClosedsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show redirects to get general show" do
-    get rooms_open_url(users(:david).rooms.closeds.last)
+    get rooms_closed_url(users(:david).rooms.closeds.last)
     assert_redirected_to room_url(users(:david).rooms.closeds.last)
   end
 
