@@ -1,6 +1,11 @@
 require "test_helper"
 
 class ApplicationCable::ConnectionTest < ActionCable::Connection::TestCase
+  test "socket lifecycle callbacks remain public with Sentry instrumentation" do
+    assert ApplicationCable::Connection.public_method_defined?(:handle_open)
+    assert ApplicationCable::Connection.public_method_defined?(:handle_close)
+  end
+
   test "connects with valid user_id cookie" do
     cookies.signed[:session_token] = sessions(:david_safari).token
 
