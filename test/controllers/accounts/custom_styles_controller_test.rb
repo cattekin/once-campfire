@@ -16,7 +16,7 @@ class Accounts::CustomStylesControllerTest < ActionDispatch::IntegrationTest
     put account_custom_styles_url, params: { account: { custom_styles: ":root { --color-text: red; }" } }
 
     assert_redirected_to edit_account_custom_styles_url
-    assert_equal accounts(:signal).custom_styles, ":root { --color-text: red; }"
+    assert_equal ":root { --color-text: red; }", accounts(:signal).reload.custom_styles
   end
 
   test "non-admins cannot update" do
