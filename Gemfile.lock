@@ -14,9 +14,9 @@ GIT
 
 GIT
   remote: https://github.com/rails/importmap-rails.git
-  revision: 51c1a531327fc04ed4552bb0fd523eb43561b817
+  revision: 6fb2bd58e3709d4996179de06aa687d6abae8a0e
   specs:
-    importmap-rails (2.2.2)
+    importmap-rails (2.2.3)
       actionpack (>= 6.0.0)
       activesupport (>= 6.0.0)
       railties (>= 6.0.0)
