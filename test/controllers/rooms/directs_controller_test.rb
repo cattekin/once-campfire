@@ -21,7 +21,7 @@ class Rooms::DirectsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "destroy only allowed for all room users" do
+  test "destroy is allowed for any member of the direct room" do
     sign_in :kevin
 
     assert_difference -> { Room.count }, -1 do
