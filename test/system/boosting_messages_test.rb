@@ -21,6 +21,10 @@ class BoostingMessagesTest < ApplicationSystemTestCase
       join_room rooms(:designers)
 
       within "#" + dom_id(boosts(:first)) do
+        # boost-delete sets this on connect, so it proves the controller is live
+        # before we click. Cable connection alone does not: Stimulus controllers
+        # are eager-loaded by separate async imports.
+        assert_selector "span[aria-describedby=delete_boost_accessible_label]"
         find("span", text: "Hello").click
         assert_selector "button", text: "Delete this boost", wait: 5
         click_on "Delete this boost"
