@@ -6,12 +6,17 @@ class Rooms::ClosedsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show redirects to get general show" do
-    get rooms_open_url(users(:david).rooms.closeds.last)
+    get rooms_closed_url(users(:david).rooms.closeds.last)
     assert_redirected_to room_url(users(:david).rooms.closeds.last)
   end
 
   test "new" do
     get new_rooms_closed_url
+    assert_response :success
+  end
+
+  test "edit" do
+    get edit_rooms_closed_url(rooms(:designers))
     assert_response :success
   end
 
@@ -25,7 +30,7 @@ class Rooms::ClosedsControllerTest < ActionDispatch::IntegrationTest
     end
 
     new_room = Room.last
-    assert_equal new_room.memberships.count, 3
+    assert_equal 3, new_room.memberships.count
     assert_redirected_to room_url(Room.last)
   end
 
@@ -47,12 +52,12 @@ class Rooms::ClosedsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to room_url(rooms(:designers))
-    assert rooms(:designers).reload.name, "New Name"
+    assert_equal "New Name", rooms(:designers).reload.name
   end
 
   test "update an open room to be closed" do
     put rooms_closed_url(rooms(:pets)), params: { room: { name: "Doesn't matter" }, user_ids: [ users(:david).id, users(:jason).id ] }
-    assert_equal rooms(:pets).memberships.count, 2
+    assert_equal 2, rooms(:pets).memberships.count
   end
 
   test "only admins or creators can update" do
@@ -63,7 +68,7 @@ class Rooms::ClosedsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :forbidden
-    assert rooms(:designers).reload.name, "Designers"
+    assert_equal "Designers", rooms(:designers).reload.name
   end
 
   test "a direct room can't be converted to closed and have its participants revised" do

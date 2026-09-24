@@ -18,4 +18,22 @@ class WelcomeControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to room_url(rooms(:watercooler))
   end
+
+  test "falls back to the default room when the last room visited is no longer reachable" do
+    cookies[:last_room] = rooms(:designers).id
+    memberships(:david_designers).destroy!
+
+    get root_url
+
+    assert_redirected_to room_url(users(:david).rooms.original)
+  end
+
+  test "renders the empty state when the user has no rooms" do
+    users(:david).memberships.destroy_all
+
+    get root_url
+
+    assert_response :success
+    assert_select ".message-area--empty"
+  end
 end

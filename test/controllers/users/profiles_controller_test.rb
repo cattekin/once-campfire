@@ -20,9 +20,10 @@ class Users::ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_equal "david@37signals.com", users(:david).email_address
   end
 
-  test "updates are limited to the current user" do
+  test "update ignores the user id in the path and always updates the current user" do
     put user_profile_url(users(:jason)), params: { user: { name: "John Doe" } }
 
     assert_equal "Jason", users(:jason).reload.name
+    assert_equal "John Doe", users(:david).reload.name
   end
 end

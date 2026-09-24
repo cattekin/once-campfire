@@ -17,14 +17,17 @@ class Users::SidebarsControllerTest < ActionDispatch::IntegrationTest
     rooms(:david_and_jason).messages.create! client_message_id: 999, body: "Hello", creator: users(:jason)
 
     get user_sidebar_url
-    assert_select ".unread", count: users(:david).memberships.select { |m| m.room.direct? && m.unread? }.count
-  end
 
+    assert_select "#direct_rooms .unread", count: 1
+    assert_select "#" + dom_id(rooms(:david_and_jason), :list) + ".unread"
+  end
 
   test "unread other" do
     rooms(:watercooler).messages.create! client_message_id: 999, body: "Hello", creator: users(:jason)
 
     get user_sidebar_url
-    assert_select ".unread", count: users(:david).memberships.reject { |m| m.room.direct? || !m.unread? }.count
+
+    assert_select "#shared_rooms .unread", count: 1
+    assert_select "#" + dom_id(rooms(:watercooler), :list) + ".unread"
   end
 end

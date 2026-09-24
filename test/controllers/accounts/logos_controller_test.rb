@@ -47,7 +47,7 @@ class Accounts::LogosControllerTest < ActionDispatch::IntegrationTest
 
   private
     def assert_valid_png_response(size:)
-      assert_equal @response.headers["content-type"], "image/png"
+      assert_equal "image/png", @response.headers["content-type"]
 
       image = ::Vips::Image.new_from_buffer(@response.body, "")
       assert_equal size, image.width

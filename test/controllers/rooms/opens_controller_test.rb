@@ -15,12 +15,17 @@ class Rooms::OpensControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "edit" do
+    get edit_rooms_open_url(rooms(:pets))
+    assert_response :success
+  end
+
   test "create" do
     assert_turbo_stream_broadcasts :rooms, count: 1 do
       post rooms_opens_url, params: { room: { name: "My New Room" } }
     end
 
-    assert_equal Room.last.memberships.count, User.count
+    assert_equal User.count, Room.last.memberships.count
     assert_redirected_to room_url(Room.last)
   end
 
@@ -41,7 +46,7 @@ class Rooms::OpensControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :forbidden
-    assert rooms(:hq).reload.name, "HQ"
+    assert_equal "HQ", rooms(:hq).reload.name
   end
 
   test "update" do
@@ -50,12 +55,12 @@ class Rooms::OpensControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to room_url(rooms(:pets))
-    assert rooms(:pets).reload.name, "New Name"
+    assert_equal "New Name", rooms(:pets).reload.name
   end
 
   test "update a closed room to be open" do
     put rooms_open_url(rooms(:designers)), params: { room: { name: "Doesn't matter" } }
-    assert_equal rooms(:designers).memberships.count, User.count
+    assert_equal User.count, rooms(:designers).memberships.count
   end
 
   test "a direct room can't be promoted to open by its creator" do

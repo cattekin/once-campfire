@@ -48,7 +48,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
     put account_url, params: { account: { name: "Different" } }
 
     assert_redirected_to edit_account_url
-    assert_equal accounts(:signal).name, "Different"
+    assert_equal "Different", accounts(:signal).reload.name
   end
 
   test "non-admins cannot update" do
