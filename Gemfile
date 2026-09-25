@@ -14,10 +14,11 @@ gem "redis", "~> 5.4"
 # Deployment
 gem "puma", "~> 7.2", ">= 7.2.1"
 
-# Jobs and cache
+# Jobs, cache and cable
 gem "resque", "~> 2.7.0"
 gem "resque-pool", "~> 0.7.1"
 gem "solid_cache"
+gem "solid_cable"
 
 # Assets
 gem "propshaft", github: "rails/propshaft"
