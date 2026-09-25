@@ -174,7 +174,7 @@ Any pending database migrations run automatically when the container boots.
 To back up your instance, back up the contents of the `/rails/storage` volume.
 
 Because the SQLite database may be written to at any moment, you shouldn't copy its files directly while Campfire is running.
-Instead, first run `script/admin/prepare-backup` inside the running container to produce a consistent snapshot of the database (it's written to `storage/backups/` inside the volume):
+Instead, first run `script/admin/prepare-backup` inside the running container to snapshot each database (primary, cache, queue, and cable) into `storage/backups/` inside the volume. Each snapshot is internally consistent; the databases are snapshotted sequentially, not as a single transaction:
 
 ```sh
 docker exec campfire script/admin/prepare-backup
@@ -193,10 +193,10 @@ docker run --rm \
   tar czf "/backup/campfire-backup.tar.gz" -C /rails storage
 ```
 
-This gives you a `campfire-backup.tar.gz` in your current directory containing the database snapshot and all uploaded files.
+This gives you a `campfire-backup.tar.gz` in your current directory containing the database snapshots and all uploaded files.
 Copy it somewhere safe, ideally off the machine.
 
-To restore, extract the archive back into a (stopped) instance's volume, and replace the live database with the snapshot:
+To restore, extract the archive back into a (stopped) instance's volume, and replace the live databases with the snapshots:
 
 ```sh
 docker run --rm \
@@ -205,9 +205,10 @@ docker run --rm \
   --volume "$PWD":/backup \
   ghcr.io/basecamp/once-campfire:latest \
   bash -c "tar xzf /backup/campfire-backup.tar.gz -C /rails &&
-           cp /rails/storage/backups/production.sqlite3 /rails/storage/db/production.sqlite3 &&
-           rm -f /rails/storage/db/production.sqlite3-wal /rails/storage/db/production.sqlite3-shm &&
+           /rails/script/admin/restore-backup &&
            chown -R rails:rails /rails/storage"
 ```
 
 Then start Campfire again.
+
+The restore script also supports older backups containing only the primary snapshot: it removes auxiliary databases so they can be recreated on startup. Any queued jobs in those auxiliary files are discarded.
