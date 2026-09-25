@@ -9,18 +9,21 @@ root = File.expand_path("../..", __dir__)
 environment = ENV.fetch("RAILS_ENV", "production")
 backups = File.join(root, "storage", "backups")
 
-# Read the same database list prepare-backup snapshots, without booting Rails.
+# Read the database list prepare-backup works from, without booting Rails.
 configuration = YAML.load(ERB.new(File.read(File.join(root, "config", "database.yml"))).result, aliases: true)
 database_paths = configuration.fetch(environment).transform_values { |config| File.join(root, config.fetch("database")) }
 
 if File.file?(File.join(backups, File.basename(database_paths.fetch("primary"))))
-  database_paths.each_value do |database|
+  database_paths.each do |name, database|
     snapshot = File.join(backups, File.basename(database))
 
     # Older backups contain only the primary snapshot. Drop any auxiliary live
     # files in that case; db:prepare will recreate them on the next boot.
+    # Always start the queue empty: jobs pending when the backup was taken
+    # already ran afterwards, and replaying them would resend push
+    # notifications and webhooks.
     FileUtils.mkdir_p(File.dirname(database))
     FileUtils.rm_f([ database, "#{database}-wal", "#{database}-shm", "#{database}-journal" ])
-    FileUtils.cp(snapshot, database) if File.file?(snapshot)
+    FileUtils.cp(snapshot, database) if name != "queue" && File.file?(snapshot)
   end
 end

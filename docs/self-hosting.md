@@ -179,7 +179,7 @@ Any pending database migrations run automatically when the container boots.
 To back up your instance, back up the contents of the `/rails/storage` volume.
 
 Because the SQLite database may be written to at any moment, you shouldn't copy its files directly while Campfire is running.
-Instead, first run `script/admin/prepare-backup` inside the running container to snapshot each database (primary, cache, queue, and cable) into `storage/backups/` inside the volume. Each snapshot is internally consistent; the databases are snapshotted sequentially, not as a single transaction:
+Instead, first run `script/admin/prepare-backup` inside the running container to snapshot the primary, cache, and cable databases into `storage/backups/` inside the volume. Each snapshot is internally consistent; the databases are snapshotted sequentially, not as a single transaction:
 
 ```sh
 docker exec campfire script/admin/prepare-backup
@@ -215,5 +215,7 @@ docker run --rm \
 ```
 
 Then start Campfire again.
+
+The queue database is not backed up: it starts empty after a restore, so jobs that were pending when the backup was taken (push notifications, bot webhooks) are not sent a second time.
 
 The restore script also supports older backups containing only the primary snapshot: it removes auxiliary databases so they can be recreated on startup. Any queued jobs in those auxiliary files are discarded.
