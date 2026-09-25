@@ -54,6 +54,8 @@ class BackupTest < ActiveSupport::TestCase
 
     database_names.each do |name|
       %w[ -wal -shm -journal ].each { |suffix| assert_not File.exist?("#{@root}/storage/db/#{name}#{suffix}") }
+    end
+    (database_names - [ queue_database_name ]).each do |name|
       SQLite3::Database.new("#{@root}/storage/db/#{name}") do |database|
         assert_equal "ok", database.get_first_value("PRAGMA integrity_check")
         assert_equal [ [ "before backup" ] ], database.execute("SELECT value FROM entries")
@@ -61,10 +63,20 @@ class BackupTest < ActiveSupport::TestCase
     end
   end
 
+  test "the queue is neither snapshotted nor restored, so pending jobs are not replayed" do
+    run_script("prepare-backup")
+    @connections.each(&:close)
+
+    run_script("restore-backup")
+
+    assert_not File.exist?("#{@root}/storage/backups/#{queue_database_name}")
+    assert_not File.exist?("#{@root}/storage/db/#{queue_database_name}")
+  end
+
   test "restoring a legacy backup removes auxiliary databases" do
     run_script("prepare-backup")
     @connections.each(&:close)
-    database_names.drop(1).each { |name| File.delete("#{@root}/storage/backups/#{name}") }
+    database_names.drop(1).each { |name| FileUtils.rm_f("#{@root}/storage/backups/#{name}") }
 
     run_script("restore-backup")
 
@@ -81,6 +93,10 @@ class BackupTest < ActiveSupport::TestCase
   private
     def database_names
       %w[ production.sqlite3 production_cache.sqlite3 production_queue.sqlite3 production_cable.sqlite3 ]
+    end
+
+    def queue_database_name
+      "production_queue.sqlite3"
     end
 
     def run_script(name)

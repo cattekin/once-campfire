@@ -4,7 +4,8 @@ require File.expand_path("../../config/environment", File.dirname(__FILE__))
 class Backup
   class << self
     def create
-      Rails.application.config.database_configuration.fetch(Rails.env).each_value do |config|
+      # restore-backup always starts the queue empty, so there's no point snapshotting it.
+      Rails.application.config.database_configuration.fetch(Rails.env).except("queue").each_value do |config|
         snapshot(Rails.root.join(config.fetch("database")))
       end
     end
