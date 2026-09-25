@@ -15,8 +15,7 @@ gem "redis", "~> 5.4"
 gem "puma", "~> 7.2", ">= 7.2.1"
 
 # Jobs, cache and cable
-gem "resque", "~> 2.7.0"
-gem "resque-pool", "~> 0.7.1"
+gem "solid_queue"
 gem "solid_cache"
 gem "solid_cable"
 
