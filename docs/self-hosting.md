@@ -109,6 +109,11 @@ docker run --publish 80:80 --env DISABLE_SSL=true ...
 To enable error reporting to Sentry in production, supply your DSN in the `SENTRY_DSN` environment variable.
 To disable Sentry initialization entirely, set `SKIP_TELEMETRY=true`.
 
+#### Background jobs (optional)
+
+Background jobs run in single-threaded worker processes alongside the web server, one for every two CPU cores by default.
+To run a different number of job workers, set `JOB_CONCURRENCY`.
+
 ### Example
 
 Putting it all together, here's a complete `docker run` invocation:

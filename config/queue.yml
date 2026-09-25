@@ -2,10 +2,11 @@ default: &default
   dispatchers:
     - polling_interval: 1
       batch_size: 500
+  # Single-threaded workers on half the cores, as resque-pool ran them.
   workers:
     - queues: "*"
-      threads: 3
-      processes: <%= ENV.fetch("JOB_CONCURRENCY", 1) %>
+      threads: 1
+      processes: <%= ENV.fetch("JOB_CONCURRENCY") { (Concurrent.processor_count * 0.5).ceil } %>
       polling_interval: 0.1
 
 development:
