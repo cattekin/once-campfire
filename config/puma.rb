@@ -47,6 +47,9 @@ ENV["JOB_CONCURRENCY"] ||= worker_count.to_s
 # Allow puma to be restarted by `bin/rails restart` command.
 plugin :tmp_restart
 
+# Run the Solid Queue supervisor alongside Puma, after bin/start-app has prepared the queue database.
+plugin :solid_queue if Rails.env.production? || Rails.env.performance?
+
 # Reset all membership connections
 Membership.disconnect_all
 
